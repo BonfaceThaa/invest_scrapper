@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import urllib.request
 
 # Get url and list view of land parcels
+coop = "Kenya Police sacco"
 coop_proj_url = "https://policesacco.com/available-projects/"
 coop_proj_html = urllib.request.urlopen(coop_proj_url).read()
 proj_html_el = BeautifulSoup(coop_proj_html, "lxml")
@@ -13,16 +14,8 @@ land_urls = []
 for url in range(len(lands_section)):
     land_urls.append(lands_section[url]["href"])
 
+land_info = {}
 
-# base data structure
-# data = {
-#     "cooperative": "kenya police sacco",
-#     "parcel_1" : {
-#         "title" : "",
-#         "cost" : ""
-#     }
-#
-# }
 
 # Scrap data from details pages
 def scrape(land_url):
@@ -36,15 +29,24 @@ def scrape(land_url):
     title = soup.select(".post-title")
     overview = soup.select(".normal")
     cost = soup.select('.table.table-striped')
+
     if len(cost) == 0:
-        print("TITLE:", title[0].get_text())
-        print("COST: ", soup.tbody.find_all('tr')[2].contents[3].get_text())
+        land_info["title"] = title[0].get_text()
+        land_info["price"] = soup.tbody.find_all('tr')[2].contents[3].get_text()
         pass
     if len(cost) == 1:
         cost = soup.select('.table.table-stripped')
-        print("TITLE:", title[0].get_text())
-        print(soup.tbody.find_all('tr')[2].contents[3].get_text())
+        land_info["title"] = title[0].get_text()
+        land_info["price"] = soup.tbody.find_all('tr')[2].contents[3].get_text()
 
+    return land_info
+
+
+data = {
+    "cooperative": coop,
+    "parcels": []
+}
 
 for url in land_urls:
     scrape(url)
+    data["parcels"].append(land_info)
