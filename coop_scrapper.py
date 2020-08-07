@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-# from threading import Thread
 import urllib.request
 
 # Get url and list view of land parcels
@@ -14,6 +13,13 @@ land_urls = []
 for url in range(len(lands_section)):
     land_urls.append(lands_section[url]["href"])
 
+# Data structure for all the scrapped data
+data = {
+    "cooperative": coop,
+    "parcels": []
+}
+
+# Data structure for a particular parcel for the scrapped data
 land_info = {}
 
 
@@ -27,26 +33,26 @@ def scrape(land_url):
     soup = BeautifulSoup(html, "html.parser")
 
     title = soup.select(".post-title")
-    overview = soup.select(".normal")
     cost = soup.select('.table.table-striped')
 
-    if len(cost) == 0:
+    def get_data():
+        """
+        function to add the title and price of a land parcel to the land_info data structure
+        :return:
+        """
         land_info["title"] = title[0].get_text()
         land_info["price"] = soup.tbody.find_all('tr')[2].contents[3].get_text()
-        pass
+
+    if len(cost) == 0:
+        get_data()
+
     if len(cost) == 1:
         cost = soup.select('.table.table-stripped')
-        land_info["title"] = title[0].get_text()
-        land_info["price"] = soup.tbody.find_all('tr')[2].contents[3].get_text()
+        get_data()
 
     return land_info
 
 
-data = {
-    "cooperative": coop,
-    "parcels": []
-}
-
 for url in land_urls:
     scrape(url)
-    data["parcels"].append(land_info)
+    data["parcels"].append(dict(land_info))
