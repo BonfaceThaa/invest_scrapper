@@ -1,9 +1,11 @@
 from bs4 import BeautifulSoup
 import urllib.request
+import json
 
 # Get url and list view of land parcels
 coop = "Kenya Police sacco"
 coop_proj_url = "https://policesacco.com/available-projects/"
+
 coop_proj_html = urllib.request.urlopen(coop_proj_url).read()
 proj_html_el = BeautifulSoup(coop_proj_html, "lxml")
 lands_section = proj_html_el.select(".button.btn-secondary.caps_small.btn_exstra_small")
@@ -56,3 +58,6 @@ def scrape(land_url):
 for url in land_urls:
     scrape(url)
     data["parcels"].append(dict(land_info))
+
+with open("data/data.json", "w") as data_file:
+    json.dump(data, data_file)
