@@ -8,3 +8,4 @@ __pycache__
 test.html
 data
 copp_scrapper2.py
+geckodriver.log
