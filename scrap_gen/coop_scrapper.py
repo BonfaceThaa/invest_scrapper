@@ -59,5 +59,5 @@ for url in land_urls:
     scrape(url)
     data["parcels"].append(dict(land_info))
 
-with open("data/data.json", "w") as data_file:
+with open("../data/data.json", "w") as data_file:
     json.dump(data, data_file)
